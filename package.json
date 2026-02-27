@@ -1,0 +1,33 @@
+{
+    "name": "danclaw",
+    "version": "1.0.0",
+    "description": "DanClaw — AI agent for service businesses. Runs on Raspberry Pi 5 via Telegram.",
+    "main": "dist/index.js",
+    "author": "Dan Downey <dan@danclaw.ai> (https://danclaw.ai)",
+    "license": "MIT",
+    "scripts": {
+          "start": "node dist/index.js",
+          "dev": "ts-node src/index.ts",
+          "build": "tsc",
+          "wizard": "node dist/wizard-server.js"
+    },
+    "dependencies": {
+          "node-telegram-bot-api": "^0.66.0",
+          "openai": "^4.47.0",
+          "@anthropic-ai/sdk": "^0.24.0",
+          "@google/generative-ai": "^0.15.0",
+          "ollama": "^0.5.0",
+          "express": "^4.19.0",
+          "dotenv": "^16.4.0"
+    },
+    "devDependencies": {
+          "typescript": "^5.4.0",
+          "@types/node": "^20.0.0",
+          "@types/express": "^4.17.0",
+          "@types/node-telegram-bot-api": "^0.64.0",
+          "ts-node": "^10.9.0"
+    },
+    "engines": {
+          "node": ">=20.0.0"
+    }
+}
