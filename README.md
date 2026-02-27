@@ -2,7 +2,7 @@
 
 **Open-source AI agent for service businesses. Runs on Raspberry Pi 5. Connects to any LLM. No cloud dependency.**
 
-Built by [Dan Downey](https://dandowneyseo.com) | MIT License | v1.0.0
+**Site:** [danclaw.com](https://danclaw.com) | Built by [Dan Downey](https://dandowneyseo.com) | MIT License | v1.0.0
 
 ---
 
