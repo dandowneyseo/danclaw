@@ -1,0 +1,24 @@
+{
+    "setup_complete": false,
+    "business": {
+          "name": "",
+          "city_state": "",
+          "phone": "",
+          "website": "",
+          "type": ""
+    },
+    "llm": {
+          "provider": "",
+          "api_key": "",
+          "model": ""
+    },
+    "telegram": {
+          "bot_token": "",
+          "operator_chat_id": ""
+    },
+    "danclaw": {
+          "version": "1.0.0",
+          "support_phone": "9168269410",
+          "support_url": "danclaw.ai"
+    }
+}
