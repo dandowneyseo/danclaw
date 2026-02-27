@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DanClaw Setup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .wizard {
+    width: 100%;
+    max-width: 480px;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .wizard-header {
+    background: #0a0a0a;
+    padding: 24px;
+    text-align: center;
+    border-bottom: 1px solid #222;
+  }
+  .wizard-header .logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .wizard-header .logo span { color: #4a9eff; }
+  .wizard-header .subtitle {
+    font-size: 13px;
+    color: #666;
+  }
+  .progress-bar {
+    height: 3px;
+    background: #222;
+  }
+  .progress-fill {
+    height: 3px;
+    background: #4a9eff;
+    transition: width 0.4s ease;
+  }
+  .wizard-body { padding: 32px 28px; }
+  .wizard-body h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .wizard-body p {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+  .crab-icon {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .form-group { margin-bottom: 16px; }
+  label {
+    display: block;
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  input[type="text"], input[type="password"], input[type="tel"],
+  input[type="url"], select {
+    width: 100%;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #fff;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  input:focus, select:focus { border-color: #4a9eff; }
+  select option { background: #1a1a1a; }
+  .btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+  .btn-primary {
+    background: #4a9eff;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #3a8ef0; }
+  .btn-primary:disabled {
+    background: #2a5a99;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  .btn-secondary {
+    background: transparent;
+    color: #666;
+    border: 1px solid #333;
+    margin-top: 8px;
+  }
+  .btn-secondary:hover { border-color: #555; color: #aaa; }
+  .test-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    margin-top: 8px;
+    min-height: 20px;
+  }
+  .test-status.success { color: #4ade80; }
+  .test-status.error { color: #f87171; }
+  .test-status.loading { color: #888; }
+  .api-key-note {
+    font-size: 12px;
+    color: #555;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+  .done-screen {
+    text-align: center;
+    padding: 40px 28px;
+  }
+  .checkmark {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(74, 222, 128, 0.1);
+    border: 2px solid #4ade80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 32px;
+    animation: popIn 0.5s ease;
+  }
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .done-screen h2 { font-size: 26px; margin-bottom: 8px; }
+  .done-screen p { color: #888; font-size: 14px; margin-bottom: 28px; }
+  .support-info {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 24px;
+    line-height: 1.8;
+  }
+  .support-info a { color: #4a9eff; text-decoration: none; }
+  .ollama-note {
+    background: #1a1f2e;
+    border: 1px solid #2a3a5a;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #7aa0dd;
+    margin-top: 10px;
+    display: none;
+    line-height: 1.5;
+  }
+  .step-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    background: #0a0a0a;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #333;
+    transition: background 0.3s;
+  }
+  .step-dot.active { background: #4a9eff; }
+  .step-dot.done { background: #4ade80; }
+</style>
+</head>
+<body>
+<div class="wizard">
+  <div class="wizard-header">
+    <div class="logo">Dan<span>Claw</span></div>
+    <div class="subtitle">danclaw.ai</div>
+  </div>
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+    <div class="step-dot" id="dot4"></div>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress" style="width:25%"></div>
+  </div>
+
+  <!-- SCREEN 1: WELCOME -->
+  <div class="screen active" id="screen1">
+    <div class="wizard-body">
+      <div class="crab-icon">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+          <ellipse cx="60" cy="62" rx="30" ry="22" fill="#4a9eff"/>
+          <ellipse cx="60" cy="58" rx="22" ry="16" fill="#4a9eff"/>
+          <circle cx="48" cy="50" r="5" fill="#0a0a0a"/>
+          <circle cx="72" cy="50" r="5" fill="#0a0a0a"/>
+          <circle cx="49" cy="49" r="2" fill="#fff"/>
+          <circle cx="73" cy="49" r="2" fill="#fff"/>
+          <path d="M25 55 Q15 45 10 35 Q18 38 22 48 Q28 52 30 58Z" fill="#4a9eff"/>
+          <path d="M95 55 Q105 45 110 35 Q102 38 98 48 Q92 52 90 58Z" fill="#4a9eff"/>
+          <path d="M38 78 Q34 90 30 98 Q38 90 44 82Z" fill="#4a9eff"/>
+          <path d="M82 78 Q86 90 90 98 Q82 90 76 82Z" fill="#4a9eff"/>
+          <path d="M50 78 Q48 92 46 100 Q54 90 56 80Z" fill="#4a9eff"/>
+          <path d="M70 78 Q72 92 74 100 Q66 90 64 80Z" fill="#4a9eff"/>
+        </svg>
+      </div>
+      <h2>Welcome to DanClaw</h2>
+      <p>Your AI agent for running your service business. Setup takes less than 2 minutes. No technical knowledge required.</p>
+      <p>You will need one thing: an API key from OpenAI, Anthropic, Google, or a local Ollama install.</p>
+      <button class="btn btn-primary" onclick="goTo(2)">Get Started</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: CONNECT YOUR AI -->
+  <div class="screen" id="screen2">
+    <div class="wizard-body">
+      <h2>Connect Your AI</h2>
+      <p>Choose your AI provider and enter your API key. This stays on your device and is never shared.</p>
+      <div class="form-group">
+        <label for="provider">AI Provider</label>
+        <select id="provider" onchange="onProviderChange()">
+          <option value="">-- Select a provider --</option>
+          <option value="openai">OpenAI (GPT-4o)</option>
+          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="google">Google (Gemini)</option>
+          <option value="ollama">Local Ollama (free, runs on device)</option>
+        </select>
+      </div>
+      <div class="form-group" id="api-key-group">
+        <label for="apiKey">API Key</label>
+        <input type="password" id="apiKey" placeholder="Paste your API key here" autocomplete="off">
+        <div class="api-key-note" id="api-key-note"></div>
+      </div>
+      <div class="ollama-note" id="ollama-note">
+        Make sure Ollama is running on this device at http://localhost:11434.
+        No API key needed. DanClaw will use the default model (llama3).
+      </div>
+      <button class="btn btn-secondary" id="testBtn" onclick="testConnection()" disabled>Test Connection</button>
+      <div class="test-status" id="testStatus"></div>
+      <button class="btn btn-primary" id="nextBtn2" onclick="goTo(3)" style="margin-top:16px" disabled>Next: Business Info</button>
+      <button class="btn btn-secondary" onclick="goTo(1)">Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: BUSINESS INFO -->
+  <div class="screen" id="screen3">
+    <div class="wizard-body">
+      <h2>Your Business</h2>
+      <p>Tell DanClaw about your business so it can represent you properly.</p>
+      <div class="form-group">
+        <label for="bizName">Business Name</label>
+        <input type="text" id="bizName" placeholder="e.g. Sacramento Mobile EV Charging">
+      </div>
+      <div class="form-group">
+        <label for="bizCity">City &amp; State</label>
+        <input type="text" id="bizCity" placeholder="e.g. Sacramento, CA">
+      </div>
+      <div class="form-group">
+        <label for="bizPhone">Your Business Phone</label>
+        <input type="tel" id="bizPhone" placeholder="e.g. (916) 555-0100">
+      </div>
+      <div class="form-group">
+        <label for="bizWeb">Website (optional)</label>
+        <input type="url" id="bizWeb" placeholder="e.g. https://yourbusiness.com">
+      </div>
+      <div class="form-group">
+        <label for="bizType">Business Type</label>
+        <select id="bizType">
+          <option value="">-- Select your industry --</option>
+          <option value="towing">Towing &amp; Roadside</option>
+          <option value="ev_charging">EV Charging</option>
+          <option value="hvac">HVAC</option>
+          <option value="plumbing">Plumbing</option>
+          <option value="landscaping">Landscaping</option>
+          <option value="cleaning">Cleaning / Detailing</option>
+          <option value="pest_control">Pest Control</option>
+          <option value="locksmith">Locksmith</option>
+          <option value="other">Other Service Business</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="telegramToken">Telegram Bot Token</label>
+        <input type="password" id="telegramToken" placeholder="Get from @BotFather on Telegram" autocomplete="off">
+        <div class="api-key-note">Create a bot at t.me/BotFather and paste the token here.</div>
+      </div>
+      <div class="form-group">
+        <label for="telegramChatId">Your Telegram Chat ID</label>
+        <input type="text" id="telegramChatId" placeholder="e.g. 123456789">
+        <div class="api-key-note">Message @userinfobot on Telegram to get your Chat ID.</div>
+      </div>
+      <button class="btn btn-primary" id="nextBtn3" onclick="submitSetup()">Finish Setup</button>
+      <button class="btn btn-secondary" onclick="goTo(2)">Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: DONE -->
+  <div class="screen" id="screen4">
+    <div class="done-screen">
+      <div class="checkmark">&#10003;</div>
+      <h2>DanClaw is Ready!</h2>
+      <p>Your AI agent is set up and running. Open your Telegram app to start receiving job notifications.</p>
+      <div class="support-info">
+        Need help? Text Dan: <strong>(916) 826-9410</strong><br>
+        Visit: <a href="https://danclaw.ai" target="_blank">danclaw.ai</a><br>
+        Docs: <a href="https://github.com/dandowneyseo/danclaw" target="_blank">github.com/dandowneyseo/danclaw</a>
+      </div>
+      <button class="btn btn-primary" onclick="window.location.href='/'">Open DanClaw</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var currentScreen = 1;
+  var testPassed = false;
+
+  function goTo(num) {
+    document.getElementById('screen' + currentScreen).classList.remove('active');
+    document.getElementById('screen' + num).classList.add('active');
+    // Update dots
+    for (var i = 1; i <= 4; i++) {
+      var dot = document.getElementById('dot' + i);
+      dot.className = 'step-dot';
+      if (i < num) dot.classList.add('done');
+      if (i === num) dot.classList.add('active');
+    }
+    // Update progress bar
+    var pct = (num / 4) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+    currentScreen = num;
+  }
+
+  function onProviderChange() {
+    var provider = document.getElementById('provider').value;
+    var apiGroup = document.getElementById('api-key-group');
+    var ollamaNote = document.getElementById('ollama-note');
+    var note = document.getElementById('api-key-note');
+    var testBtn = document.getElementById('testBtn');
+
+    testPassed = false;
+    document.getElementById('nextBtn2').disabled = true;
+    document.getElementById('testStatus').textContent = '';
+    document.getElementById('testStatus').className = 'test-status';
+
+    if (provider === 'ollama') {
+      apiGroup.style.display = 'none';
+      ollamaNote.style.display = 'block';
+      testBtn.disabled = false;
+    } else {
+      apiGroup.style.display = 'block';
+      ollamaNote.style.display = 'none';
+      var notes = {
+        openai: 'Get your key at platform.openai.com/api-keys',
+        anthropic: 'Get your key at console.anthropic.com',
+        google: 'Get your key at aistudio.google.com/app/apikey'
+      };
+      note.textContent = notes[provider] || '';
+      testBtn.disabled = !document.getElementById('apiKey').value;
+    }
+
+    document.getElementById('apiKey').addEventListener('input', function() {
+      testBtn.disabled = !this.value;
+      testPassed = false;
+      document.getElementById('nextBtn2').disabled = true;
+    });
+  }
+
+  function testConnection() {
+    var provider = document.getElementById('provider').value;
+    var apiKey = document.getElementById('apiKey').value;
+    var statusEl = document.getElementById('testStatus');
+    var nextBtn = document.getElementById('nextBtn2');
+
+    statusEl.textContent = 'Testing connection...';
+    statusEl.className = 'test-status loading';
+
+    fetch('/api/test-connection', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: provider, apiKey: apiKey })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.ok) {
+        statusEl.textContent = '&#10003; Connected successfully!';
+        statusEl.className = 'test-status success';
+        testPassed = true;
+        nextBtn.disabled = false;
+      } else {
+        statusEl.textContent = '&#10007; ' + (data.error || 'Connection failed. Check your API key.');
+        statusEl.className = 'test-status error';
+        testPassed = false;
+        nextBtn.disabled = true;
+      }
+    })
+    .catch(function() {
+      statusEl.textContent = '&#10007; Could not reach server. Is DanClaw running?';
+      statusEl.className = 'test-status error';
+    });
+  }
+
+  function submitSetup() {
+    var provider = document.getElementById('provider').value;
+    var apiKey = document.getElementById('apiKey').value;
+    var bizName = document.getElementById('bizName').value.trim();
+    var bizCity = document.getElementById('bizCity').value.trim();
+    var bizPhone = document.getElementById('bizPhone').value.trim();
+    var bizWeb = document.getElementById('bizWeb').value.trim();
+    var bizType = document.getElementById('bizType').value;
+    var telegramToken = document.getElementById('telegramToken').value.trim();
+    var telegramChatId = document.getElementById('telegramChatId').value.trim();
+
+    if (!bizName || !bizCity || !bizPhone || !bizType || !telegramToken || !telegramChatId) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    var btn = document.getElementById('nextBtn3');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+
+    fetch('/api/setup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider: provider,
+        apiKey: apiKey,
+        business: {
+          name: bizName,
+          city: bizCity,
+          phone: bizPhone,
+          website: bizWeb,
+          type: bizType
+        },
+        telegram: {
+          token: telegramToken,
+          chat_id: telegramChatId
+        }
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.ok) {
+        goTo(4);
+      } else {
+        alert('Setup failed: ' + (data.error || 'Unknown error'));
+        btn.textContent = 'Finish Setup';
+        btn.disabled = false;
+      }
+    })
+    .catch(function() {
+      alert('Could not save config. Is DanClaw running?');
+      btn.textContent = 'Finish Setup';
+      btn.disabled = false;
+    });
+  }
+</script>
+</body>
+</html>
